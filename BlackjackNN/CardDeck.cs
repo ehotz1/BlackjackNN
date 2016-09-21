@@ -9,28 +9,67 @@ namespace BlackjackNN
     public class CardDeck
     {
         public List<Card> Deck { get; private set; }
+        public List<Card> DiscardPile { get; private set; }
         private String[] CardValues = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
         private String[] SuitValues = { "H", "D", "C", "S" };
         private static Random random = new Random();
 
         public CardDeck()
         {
-            Deck = new List<Card>();
-            NewDeck();
+            Deck = new List<Card>(NewDeck());
+            
         }
 
-        private void NewDeck()
+        public List<Card> NewDeck()
         {
-            Deck.Clear();
+            List<Card> d = new List<Card>();
             for (int i = 0; i < SuitValues.Length; i++)
             {
                 for (int j = 0; j < CardValues.Length; j++)
                 {
-                    Deck.Add(new Card(""+SuitValues[i]+CardValues[j]));
+                    d.Add(new Card(""+SuitValues[i]+CardValues[j]));
 
                 }
             }
+            return d;
         }
+
+        public void AddDeck()
+        {
+            Deck.AddRange(NewDeck());
+        }
+
+        public void ClearDeck()
+        {
+            Deck.Clear();
+        }
+
+        public Card DrawCard()
+        {
+            Card draw = Deck[0];
+            Deck.Remove(Deck[0]);
+            return draw;
+        }
+
+        public void DiscardHand(List<Card> hand)
+        {
+            DiscardPile.AddRange(hand);
+        }
+
+        public List<Card> DealHand(int size)
+        {
+            List<Card> hand = new List<Card>();
+            if (Deck.Count < size)
+            {
+                ReShuffle();
+            }
+            for (int i = 0; i < size; i++)
+            {
+                hand.Add(DrawCard());
+            }
+            return hand;
+        }
+
 
         public void Shuffle() //Fisher-Yates shuffle
         {
@@ -42,6 +81,12 @@ namespace BlackjackNN
                 Deck[k] = temp;
             }
 
+        }
+
+        public void ReShuffle()
+        {
+            Deck.AddRange(DiscardPile);
+            Shuffle();
         }
     }
 
