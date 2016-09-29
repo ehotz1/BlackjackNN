@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace BlackjackNN
 
         public CardDeck()
         {
-            Deck = new List<Card>(NewDeck());
-            
+            Deck = new List<Card>();
+            DiscardPile = new List<Card>();
         }
 
         public List<Card> NewDeck()
@@ -86,6 +87,7 @@ namespace BlackjackNN
         public void ReShuffle()
         {
             Deck.AddRange(DiscardPile);
+            DiscardPile.Clear();
             Shuffle();
         }
     }
@@ -98,8 +100,10 @@ namespace BlackjackNN
         }
 
         public SuitType Suit { get; private set; }
-        public String StringValue { get; set; }
+        public String StringValue { get; private set; }
         public int NumValue { get; set; } //Evaluated during game logic init
+        public Color CardColor { get; private set; }
+        public String Symbol { get; private set; }
 
         public Card(String input)
         {
@@ -108,27 +112,33 @@ namespace BlackjackNN
             {
                 case ('H'):
                     Suit = SuitType.Hearts;
+                    CardColor = Color.Red;
+                    Symbol = "\u2665";
                     break;
                 case ('D'):
                     Suit = SuitType.Diamonds;
+                    CardColor = Color.Red;
+                    Symbol = "\u2666";
                     break;
                 case ('C'):
                     Suit = SuitType.Clubs;
+                    CardColor = Color.Black;
+                    Symbol = "\u2663";
                     break;
                 case ('S'):
                     Suit = SuitType.Spades;
+                    CardColor = Color.Black;
+                    Symbol = "\u2660";
                     break;
 
             }
             String v = input.Substring(1);
             StringValue = v;
-
         }
-
 
         public String toString()
         {
-            return StringValue + " of " + Suit;
+            return StringValue + Symbol;
         }
     }
 }
