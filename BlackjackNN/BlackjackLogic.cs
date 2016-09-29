@@ -85,8 +85,8 @@ namespace BlackjackNN
             while (DealerShouldHit()) { DealerHand.AddCard(Deck.DrawCard()); }
 
             if (DealerHand.HasBlackJack() && !Player.Hand.HasBlackJack()) EndRound(false);
-            else if (DealerHand.Value > 21) EndRound(true);
-            else if (Player.Hand.GetHandValue() >= DealerHand.Value) EndRound(true);
+            else if (DealerHand.GetHandValue() > 21) EndRound(true);
+            else if (Player.Hand.GetHandValue() >= DealerHand.GetHandValue()) EndRound(true);
             else EndRound(false);
         }
 
