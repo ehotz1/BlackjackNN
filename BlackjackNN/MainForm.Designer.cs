@@ -36,6 +36,16 @@
             this.DealerHandLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.PopSizeBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.GenBox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.PauseTime = new System.Windows.Forms.NumericUpDown();
+            this.RunButton = new System.Windows.Forms.Button();
+            this.StopButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.PauseTime)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -113,12 +123,98 @@
             this.label2.TabIndex = 13;
             this.label2.Text = "Game:";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(-2, 128);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(97, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Neural Net Options";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 155);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "Population Size";
+            // 
+            // PopSizeBox
+            // 
+            this.PopSizeBox.Location = new System.Drawing.Point(12, 171);
+            this.PopSizeBox.Name = "PopSizeBox";
+            this.PopSizeBox.Size = new System.Drawing.Size(77, 20);
+            this.PopSizeBox.TabIndex = 16;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(9, 194);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(86, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "# of Generations";
+            // 
+            // GenBox
+            // 
+            this.GenBox.Location = new System.Drawing.Point(12, 210);
+            this.GenBox.Name = "GenBox";
+            this.GenBox.Size = new System.Drawing.Size(77, 20);
+            this.GenBox.TabIndex = 18;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 237);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(37, 13);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Pause";
+            // 
+            // PauseTime
+            // 
+            this.PauseTime.Location = new System.Drawing.Point(54, 237);
+            this.PauseTime.Name = "PauseTime";
+            this.PauseTime.Size = new System.Drawing.Size(35, 20);
+            this.PauseTime.TabIndex = 20;
+            // 
+            // RunButton
+            // 
+            this.RunButton.Location = new System.Drawing.Point(14, 263);
+            this.RunButton.Name = "RunButton";
+            this.RunButton.Size = new System.Drawing.Size(75, 23);
+            this.RunButton.TabIndex = 21;
+            this.RunButton.Text = "Run";
+            this.RunButton.UseVisualStyleBackColor = true;
+            this.RunButton.Click += new System.EventHandler(this.RunButton_Click);
+            // 
+            // StopButton
+            // 
+            this.StopButton.Location = new System.Drawing.Point(15, 293);
+            this.StopButton.Name = "StopButton";
+            this.StopButton.Size = new System.Drawing.Size(75, 23);
+            this.StopButton.TabIndex = 22;
+            this.StopButton.Text = "Stop";
+            this.StopButton.UseVisualStyleBackColor = true;
+            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.ForestGreen;
             this.ClientSize = new System.Drawing.Size(715, 323);
+            this.Controls.Add(this.StopButton);
+            this.Controls.Add(this.RunButton);
+            this.Controls.Add(this.PauseTime);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.GenBox);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.PopSizeBox);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DealerHandLabel);
@@ -129,6 +225,7 @@
             this.Controls.Add(this.comboBox1);
             this.Name = "MainForm";
             this.Text = "Blackjack";
+            ((System.ComponentModel.ISupportInitialize)(this.PauseTime)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,6 +240,15 @@
         private System.Windows.Forms.Label DealerHandLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox PopSizeBox;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox GenBox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown PauseTime;
+        private System.Windows.Forms.Button RunButton;
+        private System.Windows.Forms.Button StopButton;
     }
 }
 

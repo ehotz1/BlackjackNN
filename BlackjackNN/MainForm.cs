@@ -25,7 +25,7 @@ namespace BlackjackNN
 
         public MainForm()
         {
-            logic = new BlackjackLogic();
+            logic = BlackjackLogic.GetInstance();
             
             CardList = new List<Object>();
 
@@ -65,7 +65,7 @@ namespace BlackjackNN
 
         private void CheckRunning()
         {
-            if (logic.GameRunning)
+            if (logic.CanAct)
             {
                 HitButton.Enabled = true;
                 StayButton.Enabled = true;
@@ -113,6 +113,29 @@ namespace BlackjackNN
                 
             }
             
+        }
+
+        private void RunButton_Click(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                int popsize = Int32.Parse(PopSizeBox.Text);
+                int gensize = Int32.Parse(GenBox.Text);
+                logic.NewGA(popsize, gensize);
+                HitButton.Enabled = false;
+                StayButton.Enabled = false;
+
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Enter an integer");
+                Console.WriteLine(ex);
+            }
+        }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            if (logic.GA != null) logic.GA.Stop = true;
         }
     }
 }

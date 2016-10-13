@@ -46,15 +46,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlackjackLogic.cs" />
-    <Compile Include="CardDeck.cs" />
+    <Compile Include="Blackjack\BJHand.cs" />
+    <Compile Include="Blackjack\BlackjackLogic.cs" />
+    <Compile Include="Blackjack\CardDeck.cs" />
+    <Compile Include="ANN\GeneticAlgorithm.cs" />
+    <Compile Include="ANN\Layer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Player.cs" />
+    <Compile Include="ANN\Network.cs" />
+    <Compile Include="ANN\Neuron.cs" />
+    <Compile Include="Blackjack\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
