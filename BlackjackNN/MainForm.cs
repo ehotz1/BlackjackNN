@@ -98,7 +98,7 @@ namespace BlackjackNN
                     Rectangle card = new Rectangle(DealerPoint.X + 75 + i * 100, DealerPoint.Y, CardWidth, CardHeight);
                     graphics.FillRectangle(brush, card);
                     brush.Color = logic.DealerHand.Cards[i].CardColor;
-                    graphics.DrawString(logic.DealerHand.Cards[i].toString(), font, brush, card);
+                    graphics.DrawString(logic.DealerHand.Cards[i].ToString(), font, brush, card);
                    
                 }
             }
@@ -109,7 +109,7 @@ namespace BlackjackNN
                 Rectangle card = new Rectangle(PlayerPoint.X + 75 + i * 100, PlayerPoint.Y, CardWidth, CardHeight);
                 graphics.FillRectangle(brush, card);
                 brush.Color = logic.Player.Hand.Cards[i].CardColor;
-                graphics.DrawString(logic.Player.Hand.Cards[i].toString(), font, brush, card);
+                graphics.DrawString(logic.Player.Hand.Cards[i].ToString(), font, brush, card);
                 
             }
             
@@ -132,10 +132,6 @@ namespace BlackjackNN
                 Console.WriteLine(ex);
             }
         }
-
-        private void StopButton_Click(object sender, EventArgs e)
-        {
-            if (logic.GA != null) logic.GA.Stop = true;
-        }
+        
     }
 }

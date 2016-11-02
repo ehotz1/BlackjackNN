@@ -44,7 +44,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.PauseTime = new System.Windows.Forms.NumericUpDown();
             this.RunButton = new System.Windows.Forms.Button();
-            this.StopButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PauseTime)).BeginInit();
             this.SuspendLayout();
             // 
@@ -190,23 +189,12 @@
             this.RunButton.UseVisualStyleBackColor = true;
             this.RunButton.Click += new System.EventHandler(this.RunButton_Click);
             // 
-            // StopButton
-            // 
-            this.StopButton.Location = new System.Drawing.Point(15, 293);
-            this.StopButton.Name = "StopButton";
-            this.StopButton.Size = new System.Drawing.Size(75, 23);
-            this.StopButton.TabIndex = 22;
-            this.StopButton.Text = "Stop";
-            this.StopButton.UseVisualStyleBackColor = true;
-            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.ForestGreen;
             this.ClientSize = new System.Drawing.Size(715, 323);
-            this.Controls.Add(this.StopButton);
             this.Controls.Add(this.RunButton);
             this.Controls.Add(this.PauseTime);
             this.Controls.Add(this.label6);
@@ -248,7 +236,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown PauseTime;
         private System.Windows.Forms.Button RunButton;
-        private System.Windows.Forms.Button StopButton;
     }
 }
 

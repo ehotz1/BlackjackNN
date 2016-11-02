@@ -8,25 +8,24 @@ namespace BlackjackNN
 {
     public abstract class Layer
     {
-        protected Neuron[] neurons;
-        public int size;
-        protected int[] OutputIndexes; //Denotes which neurons outputs should be sent to
-        public Layer()
+        public Neuron[] neurons;
+        private int index;
+        public Layer(int size)
         {
-            neurons = new Neuron[] { };
-            size = 0;
+            neurons = new Neuron[size];
+            index = 0;
             CreateNeurons();
         }
 
         public void AddNeuron(Neuron n)
         {
-            neurons[size] = n;
-            size++;
+            neurons[index] = n;
+            index++;
         }
 
         public double[][] GetWeights()
         {
-            double[][] weights = { };
+            double[][] weights = new double[neurons.Length][];
             for (int i = 0; i < neurons.Length; i++)
             {
                 weights[i] = neurons[i].weights;
@@ -36,21 +35,18 @@ namespace BlackjackNN
 
         public void SetWeights(double[][] wts)
         {
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < neurons.Length; i++)
             {
                 neurons[i].SetWeights(wts[i]);
             }
         }
 
-        
-
         public double[] ProcessLayer()
         {
-            double[] output = { };
+            double[] output = new double[neurons.Length];
             for (int i = 0; i < neurons.Length; i++)
             {
-                neurons[i].ProcessingFunction();
-                output[i] = neurons[i].Output;
+                output[i] = neurons[i].ProcessingFunction();
             }
             return output;
         }
@@ -61,52 +57,61 @@ namespace BlackjackNN
 
     public class InputLayer : Layer
     {
+        public InputLayer(int size) : base(size)
+        {
+        }
+
         public override void CreateNeurons()
         {
-            AddNeuron(new InputNeuron()); //Input player cards
-            AddNeuron(new InputNeuron()); //Input dealer card
+            AddNeuron(new InputNeuron(3)); //Input player cards
+            AddNeuron(new InputNeuron(1)); //Input dealer card
         }
 
         public override void SetInputs(double[] arr)
         {
-            double[] PlayerCards = { };
-            Array.Copy(arr, PlayerCards, arr.Length - 1);
-            neurons[0].SetInputs(PlayerCards);
-            neurons[1].SetInputs(new double[] { arr[arr.Length] });
+            neurons[0].SetInputs(new double[] { arr[0], arr[1] });
+            neurons[1].SetInputs(new double[] { arr[2] });
         }
 
     }
 
     public class HiddenLayer : Layer
     {
+        public HiddenLayer(int size) : base(size)
+        {
+        }
+
         public override void CreateNeurons()
         {
-            AddNeuron(new HiddenNeuron()); //Process player cards
-            AddNeuron(new HiddenNeuron()); //Process player/dealer
-            AddNeuron(new HiddenNeuron()); //Process dealer
+            AddNeuron(new HiddenNeuron(3)); //Process player cards
+            AddNeuron(new HiddenNeuron(1)); //Process dealer
         }
 
         public override void SetInputs(double[] arr)
         {
             neurons[0].SetInputs(new double[] { arr[0] });
-            neurons[1].SetInputs(new double[] { arr[0], arr[1] });
-            neurons[2].SetInputs(new double[] { arr[1] });
+            neurons[1].SetInputs(new double[] { arr[1] });
         }
     }
 
     public class OutputLayer : Layer
     {
+        public OutputLayer(int size) : base(size)
+        {
+        }
+
         public override void CreateNeurons()
         {
-            AddNeuron(new OutputNeuron()); //Output to hit or stay
+            AddNeuron(new OutputNeuron(1)); //Output to hit or stay
         }
 
         public override void SetInputs(double[] arr)
         {
-            for (int i = 0; i < neurons.Length; i++)
-            {
-                neurons[i].SetInputs(new double[] { arr[i] });
-            }
+            //for (int i = 0; i < neurons.Length; i++)
+            //{
+            //    neurons[i].SetInputs(arr);
+            //}
+            neurons[0].SetInputs(arr);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace BlackjackNN
     {
         public List<Card> Deck { get; private set; }
         public List<Card> DiscardPile { get; private set; }
-        private String[] CardValues = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
-        private String[] SuitValues = { "H", "D", "C", "S" };
+        private string[] CardValues = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+        private string[] SuitValues = { "H", "D", "C", "S" };
         private static Random random = new Random();
 
         public CardDeck()
@@ -47,6 +47,7 @@ namespace BlackjackNN
 
         public Card DrawCard()
         {
+            if (Deck.Count < 1) ReShuffle();
             Card draw = Deck[0];
             Deck.Remove(Deck[0]);
             return draw;
@@ -100,14 +101,14 @@ namespace BlackjackNN
         }
 
         public SuitType Suit { get; private set; }
-        public String StringValue { get; private set; }
+        public string StringValue { get; private set; }
         public int NumValue { get; set; } //Evaluated during game logic init
         public Color CardColor { get; private set; }
-        public String Symbol { get; private set; }
+        public string Symbol { get; private set; }
 
-        public Card(String input)
+        public Card(string input)
         {
-
+            NumValue = 0;
             switch(input[0])
             {
                 case ('H'):
@@ -132,11 +133,10 @@ namespace BlackjackNN
                     break;
 
             }
-            String v = input.Substring(1);
-            StringValue = v;
+            StringValue = input.Substring(1);
         }
 
-        public String toString()
+        public override string ToString()
         {
             return StringValue + Symbol;
         }

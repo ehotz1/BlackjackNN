@@ -24,10 +24,18 @@ namespace BlackjackNN
             DealerHand = new BJHand();
             NewGame();
         }
+        public string CardCounts()
+        {
+            return "Deck: " + Deck.Deck.Count + " Discard: " + Deck.DiscardPile.Count;
+        }
 
         public static BlackjackLogic GetInstance()
         {
-            if (logic == null) return new BlackjackLogic();
+            if (logic == null)
+            {
+                logic = new BlackjackLogic();
+                return logic;
+            }
             else return logic;
         }
 
@@ -57,8 +65,8 @@ namespace BlackjackNN
 
         public void NewGA(int pop, int gen) 
         {
-            GA = new GeneticAlgorithm(); //Change, when saving is enabled
-            GA.SetParams(pop, gen);
+            GA = new GeneticAlgorithm(pop, gen); //Change, when saving is enabled
+            
         }
 
         public List<Card> DealHand()
@@ -71,9 +79,15 @@ namespace BlackjackNN
 
         public void ReturnHand(BJHand hand)
         {
-            Deck.DiscardHand(hand.ReturnHand());
+            Deck.DiscardHand(hand.ClearHand());
+            
         }
 
+        public void DiscardHands()
+        {
+            ReturnHand(DealerHand);
+            ReturnHand(Player.Hand);
+        }
 
         public void PlayRound()
         {
@@ -102,43 +116,36 @@ namespace BlackjackNN
             while (DealerShouldHit()) { DealerHand.AddCard(Deck.DrawCard()); }
 
             if (DealerHand.HasBlackJack() && !Player.Hand.HasBlackJack()) EndRound(1);
-            else if (DealerHand.GetHandValue() > 21) EndRound(0);
-            else if (Player.Hand.GetHandValue() >= DealerHand.GetHandValue()) EndRound(0);
+            else if (DealerHand.GetHighValue() > 21) EndRound(0);
+            else if (Player.Hand.GetHighValue() >= DealerHand.GetHighValue()) EndRound(0);
             else EndRound(1);
         }
 
         public bool DealerShouldHit() //Dealer stays on all 17's
         {
-            if (DealerHand.GetHandValue() < 17) return true;
+            if (DealerHand.GetHighValue() < 17) return true;
             return false;
         }
 
         public void EndRound(int condition)
         {
             CanAct = false;
+            DiscardHands();
             switch (condition) {
                 case 0:
-                    Console.WriteLine("NN wins");
                     GA.SetNetworkFitness(true);
                     break;
                 case 1:
-                    Console.WriteLine("NN loses");
                     GA.SetNetworkFitness(false);
                     break;
                 case 2:
-                    Console.WriteLine("Blackjack: round results discarded");
                     GA.SetNetworkFitness(false);
                     break;
+
             }
-            
         }
 
-        public void DiscardHands()
-        {
-            ReturnHand(DealerHand);
-            ReturnHand(Player.Hand);
-            Deck.Shuffle();
-        }
+        
 
     }
     

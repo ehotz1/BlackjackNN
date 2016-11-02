@@ -22,18 +22,18 @@ namespace BlackjackNN.Blackjack
         {
             Cards = h;
             AceFlag = false;
-            Value = CalculateValue();
+            Value = GetLowValue();
         }
 
-        public int GetHandValue() //Evaluates for Aces
+        public int GetHighValue() //Evaluates for Aces
         {
             if (AceFlag && Value < 12) return Value + 10;
             else return Value;
         }
 
-        public List<Card> ReturnHand()
+        public List<Card> ClearHand()
         {
-            List<Card> tList = Cards;
+            List<Card> tList = new List<Card>(Cards);
             Cards.Clear();
             return tList;
         }
@@ -41,14 +41,14 @@ namespace BlackjackNN.Blackjack
         public void AddCard(Card card)
         {
             Cards.Add(card);
-            CalculateValue();
+            GetLowValue();
         }
 
         public void SetHand(List<Card> hand)
         {
             Cards = hand;
             AceFlag = false;
-            CalculateValue();
+            GetLowValue();
         }
 
         public bool HasBlackJack()
@@ -62,7 +62,7 @@ namespace BlackjackNN.Blackjack
             return (Value < 22) ? false : true;
         }
 
-        public int CalculateValue()
+        public int GetLowValue()
         {
             Value = 0;
             foreach (Card c in Cards)
@@ -74,5 +74,14 @@ namespace BlackjackNN.Blackjack
             return Value;
         }
 
+        public override string ToString()
+        {
+            string output = "";
+            foreach (Card c in Cards)
+            {
+                output += c.ToString();
+            }
+            return output;
+        }
     }
 }

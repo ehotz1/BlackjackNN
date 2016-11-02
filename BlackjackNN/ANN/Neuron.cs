@@ -9,10 +9,14 @@ namespace BlackjackNN
     public abstract class Neuron
     {
         protected double[] inputs;
-        public double[] weights { get; private set; }
-        public double Output { get; set; }
+        public double[] weights { get; set; } 
+        protected double Output { get; set; }
         //protected double bias;
-        //public abstract void NormalizeInputs(); //Convert inputs to usable numbers
+        public Neuron(int WtArrSize)
+        {
+            weights = new double[WtArrSize];
+
+        }
         public void SetWeights(double[] w)
         {
             weights = w;
@@ -21,38 +25,61 @@ namespace BlackjackNN
         {
             inputs = i;
         }
-        public abstract void ProcessingFunction(); //Process inputs
+        public abstract double ProcessingFunction(); //Process inputs
     }
 
     public class InputNeuron : Neuron
     {
-        
-
-        public override void ProcessingFunction() //Weight inputs and sum
+        public InputNeuron(int WtArrSize) : base(WtArrSize)
         {
-            Output = 0;
+        }
+
+        //inputs[0]: hand value
+        //inputs[1]: second hand value; only used if player's hand contains an ace
+        //weights[0]: weight for hand value
+        //weights[1/2]: used to weight ace low/ace high hands
+
+        public new void SetInputs(double[] i)
+        {
+            inputs = i;
+            //NormalizeInputs();
+        }
+
+        public override double ProcessingFunction() //Weight inputs, sum
+        {
+            //If a second hand value exists - an Ace in hand - choose which value to use based on step function
+            int i = 0;
+            if (inputs.Length > 1 && inputs[1] != -1)
+            {
+                i = (inputs[0] * weights[1] > inputs[1] * weights[2]) ? 0 : 1;
+            }
+            
+            return inputs[i] * weights[0];
+            
+        }
+
+
+        public void NormalizeInputs()
+        {
             for (int i = 0; i < inputs.Length; i++)
             {
-                Output += inputs[i] * weights[i];
+                inputs[i] = inputs[i] - 10; //Normalize data for hidden neuron sigmoid function
             }
         }
-        
-
-        //public void NormalizeInputs()
-        //{
-        //    for (int i = 0; i < inputs.Length; i++)
-        //    {
-        //        inputs[i] = inputs[i] / 10;
-        //    }
-        //}
     }
 
     public class HiddenNeuron : Neuron
     {
-        
-        public override void ProcessingFunction()
+        public HiddenNeuron(int WtArrSize) : base(WtArrSize)
         {
-            //Activation function
+        }
+
+        public override double ProcessingFunction()
+        {
+            //Activation function - Sigmoid, modified to process outputs for values from 2 to 20
+            
+            Output = 1 / (1 + Math.Exp(-5+.5 * inputs[0]));
+            return Output * weights[0];
         }
 
         
@@ -60,11 +87,16 @@ namespace BlackjackNN
 
     public class OutputNeuron : Neuron
     {
-        
-
-        public override void ProcessingFunction()
+        public OutputNeuron(int WtArrSize) : base(WtArrSize)
         {
+        }
+
+        public override double ProcessingFunction()
+        {
+            double threshold = weights[0];
             //Activation function. Decide whether to hit or stay; output 1 or 0
+            Output = (inputs[0] + inputs[1] > threshold) ? 1 : 0;
+            return Output;
         }
 
        
