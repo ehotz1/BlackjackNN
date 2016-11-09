@@ -9,16 +9,18 @@ namespace BlackjackNN
     public class Network
     {
         public Layer[] layers;
-        public bool IsFit;
         public double[][] InputWeights { get { return layers[0].GetWeights(); } set { layers[0].SetWeights(value); } }
         public double[][] HiddenWeights { get { return layers[1].GetWeights(); } set { layers[1].SetWeights(value); } }
         public double threshold { get { return layers[2].GetWeights()[0][0]; } set { layers[2].SetWeights(new double[][] { new double[] {value } }); } }
+        public double fitness { get { return results.GetFitness(); } }
+        public Results results;
 
-        public Network()
+        public Network(int rounds)
         {
-            IsFit = false;
             layers = new Layer[3];
+            results = new Results(rounds);
             CreateLayers();
+            
         }
 
         private void CreateLayers()
@@ -28,14 +30,20 @@ namespace BlackjackNN
             layers[2] = new OutputLayer(1);
         }
 
+        public void SetResults(int round, int win, int player, int dealer)
+        {
+            if (dealer > 21) dealer = 22; //Treats all dealer busts as the same fitness
+            results.SetRoundResult(round, win, player, dealer);
+        }
+
         public void SetWeights(int LayerIndex, double[][] weights)
         {
             layers[LayerIndex].SetWeights(weights);
         }
 
-        public Network Clone()
+        public Network Clone(int rounds)
         {
-            Network net = new Network();
+            Network net = new Network(rounds);
             net.InputWeights = this.InputWeights;
             net.HiddenWeights = this.HiddenWeights;
             net.threshold = this.threshold;
@@ -62,10 +70,61 @@ namespace BlackjackNN
             
 
         }
+        
+    }
 
-        public override string ToString()
+    public struct Results
+    {
+        int[,] results;
+        public Results(int rounds)
         {
-            return "Layers: " + layers.Length;
+            results = new int[rounds, 3];
+        }
+
+        public void SetRoundResult(int round, int win, int player, int dealer)
+        {
+
+            results[round, 0] = win;
+            results[round, 1] = player;
+            results[round, 2] = dealer;
+        }
+        
+        public int GetWins()
+        {
+            int wins = 0;
+            for (int i = 0; i < results.GetLength(0); i++)
+            {
+                if (results[i,0] == 1) wins++;
+            }
+            return wins;
+        }
+
+        public double GetFitness() //Network fitness function
+        {
+            double fitness = 0;
+            int wins = 0;
+            for (int i = 0; i < results.GetLength(0); i++)
+            {
+                if (results[i, 0] == 1)
+                {
+                    fitness += (double)results[i, 1] / (double)results[i, 2];
+                    wins++;
+                }
+            }
+            return (wins == 0) ? 0 : fitness / (double)wins;
+        }
+
+        public string PrintResults()
+        {
+            string s = "";
+            for (int i = 0; i < results.GetLength(0); i++)
+            {
+                s += "Round " + i + ": ";
+                s += (results[i, 0] == 0) ? "Loss" : "Win";
+                s += "; Player: " + results[i, 1] + ", Dealer: " + results[i, 2] + "\n";
+            }
+            return s;
         }
     }
+
 }

@@ -11,94 +11,125 @@ namespace BlackjackNN
         //Create n NNs, choose best, repopulate
         List<Network> networks;
         private double MutationRate;
+        private double MutationChance;
+        private double WinThreshold;
         private int Population;
         private int Generations;
-        public int NetIndex;
+        public int RoundNumber;
         private Random r;
         private NetInterface NI;
         public bool Stop;
 
-        public GeneticAlgorithm(int p, int g)
+        public GeneticAlgorithm()
         {
-            NetIndex = 0;
-            networks = new List<Network>();
+            RoundNumber = 5;
             Stop = true;
             MutationRate = 0.05;
-            SetParams(p, g);
+            MutationChance = 0.5;
+            WinThreshold = 0.75;
             r = new Random();
-            CreateNetworks(p, false);
             NI = new NetInterface(this);
             NI.Show();
         }
 
-        public void SetParams(int p, int g)
+        public void SetParams(int pop, int gen, int rounds, int per)
         {
-            Population = p;
-            Generations = g;
+            Population = pop;
+            Generations = gen;
+            RoundNumber = rounds;
+            WinThreshold = (double)per/100;
+            networks = new List<Network>();
+            CreateNetworks(pop, false);
         }
-
-        public void SetNetworkFitness(bool fit)
-        {
-            networks[NetIndex].IsFit = fit;
-        }
+        
 
         public void Run()
         {
 
             while (Generations > 0 && !Stop)
             {
+                int NetIndex = 0;
                 for (int i = 0; i < networks.Count; i++)
                 {
-                    //Run network
-                    BlackjackLogic.GetInstance().PlayRound();
-                    while (BlackjackLogic.GetInstance().CanAct)
+                    //Run network for n rounds
+                    for (int j = 0; j < RoundNumber; j++)
                     {
-                        if (networks[NetIndex].Decision())
+                        BlackjackLogic.GetInstance().PlayRound();
+                        while (BlackjackLogic.GetInstance().CanAct)
                         {
-                            BlackjackLogic.GetInstance().Hit();
-                        } else
-                        {
-                            BlackjackLogic.GetInstance().Stay();
+                            if (networks[NetIndex].Decision())
+                            {
+                                BlackjackLogic.GetInstance().Hit();
+                            }
+                            else
+                            {
+                                BlackjackLogic.GetInstance().Stay();
+                            }
                         }
+                        int[] results = BlackjackLogic.GetInstance().round_replay.GetRoundResults();
+                        networks[NetIndex].SetResults(j, results[0], results[1], results[2]);
                     }
+                    NetIndex++;
                 }
                 NextGeneration();
                 Generations--;
             }
+            if (Generations == 0) NI.Reset();
         }
 
         public void NextGeneration()
         {
-            NetIndex = 0;
             //Remove unfit networks, breed new networks
             for (int i = networks.Count - 1; i >= 0; i--)
             {
-                if (!networks[i].IsFit)
+                if ((double)networks[i].results.GetWins()/RoundNumber < WinThreshold) 
                 {
                     networks.RemoveAt(i);
                 }
             }
             int num = Population - networks.Count;
-            PushUpdate();
+            double percentage = ((double)networks.Count / (double)Population) * 100;
+            NI.UpdateDisplay("Fit networks: " + percentage + "%");
             CreateNetworks(num, true);
         }
 
         public void CreateNetworks(int num, bool mutate)
         {
             //Create weights from fit networks, or from random set
+            //Sort networks by fitness, add biased function to pick from the top
+            List<Network> newNetworks = new List<Network>();
+            if (mutate)
+            {
+                networks.Sort(delegate(Network x, Network y)
+                {
+                    if (x.fitness == y.fitness) return 0;
+                    else if (x.fitness < y.fitness) return 1;
+                    else return -1;
+                });
+            }
+            
             for (int i = 0; i < num; i++)
             {
-                Network net = (mutate) ? GetRandomNetwork() : new Network();
+                Network net = (mutate) ? GetRandomFitNetwork() : new Network(RoundNumber);
                 
                 SetNetworkWeights(net, mutate);
-                networks.Add(net);
+                newNetworks.Add(net);
             }
+            networks.AddRange(newNetworks);
         }
-
-        public Network GetRandomNetwork() //Returns a random network from the network list
+        
+        //Pick a random network from upper half of list
+        public Network GetRandomFitNetwork() 
         {
-            if (networks.Count == 0) return new Network();
-            return networks[r.Next(networks.Count)].Clone();
+            if (networks.Count == 0) //In case of population crash, create new random network
+            {
+                Network net = new Network(RoundNumber);
+                SetNetworkWeights(net, false);
+                return net;
+            }
+
+            int i = r.Next(networks.Count/2, networks.Count - 1);
+            return networks[i].Clone(RoundNumber);
         }
 
         public double[] RandomWeights(int l)  //Create random weights
@@ -112,12 +143,15 @@ namespace BlackjackNN
             return weights;
         }
 
-        public double[] MutatedWeights(double[] wt) //TODO: look up proper mutation process
+        public double[] MutatedWeights(double[] wt) 
         {
             for (int i = 0; i < wt.Length; i++)
             {
+                //if (r.NextDouble() <= MutationChance) continue;
                 bool positive = (r.NextDouble() >= 0.5) ? true : false;
                 wt[i] += (positive) ? (r.NextDouble() * MutationRate) : (-r.NextDouble() * MutationRate);
+                if (wt[i] < 0) wt[i] = 0;
+                if (wt[i] > 1) wt[i] = 1;
             }
             return wt;
         }
@@ -139,14 +173,37 @@ namespace BlackjackNN
                 }
             }
         }
-
-        private void PushUpdate()
+        
+        public void TestTopNetwork()
         {
-            string output = "";
-            double percentage = ((double)networks.Count / (double)Population) * 100;
-            output += "Generation: " + Generations + " Win: " + percentage + "%";
-            NI.UpdateDisplay(output);
+            for (int j = 0; j < 10; j++)
+            {
+                BlackjackLogic.GetInstance().PlayRound();
+                while (BlackjackLogic.GetInstance().CanAct)
+                {
+                    if (networks[0].Decision())
+                    {
+                        BlackjackLogic.GetInstance().Hit();
+                    }
+                    else
+                    {
+                        BlackjackLogic.GetInstance().Stay();
+                    }
+                }
+                NI.UpdateDisplay(BlackjackLogic.GetInstance().round_replay.PrintReplay());
+            }
+        }
+
+        public List<double[][]> GetTopNetworkWeights()
+        {
+            List<double[][]> weights = new List<double[][]>();
+            weights.Add(networks[0].InputWeights);
+            weights.Add(networks[0].HiddenWeights);
+            weights.Add(new double[][] { new double[] { networks[0].threshold } });
+            return weights;
         }
         
     }
+
+    
 }

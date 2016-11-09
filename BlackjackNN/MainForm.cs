@@ -15,7 +15,6 @@ namespace BlackjackNN
         private BlackjackLogic logic;
         private Point DealerPoint;
         private Point PlayerPoint;
-        private List<Object> CardList;
         //Draw variables
         private Graphics graphics;
         private SolidBrush brush;
@@ -26,8 +25,6 @@ namespace BlackjackNN
         public MainForm()
         {
             logic = BlackjackLogic.GetInstance();
-            
-            CardList = new List<Object>();
 
             font = new Font(FontFamily.GenericSansSerif, 25);
             CardWidth = 75;
@@ -73,15 +70,18 @@ namespace BlackjackNN
             {
                 HitButton.Enabled = false;
                 StayButton.Enabled = false;
+                ReDrawCards(true);
+                graphics = this.CreateGraphics();
+                brush = new SolidBrush(Color.Black);
+                string results = (BlackjackLogic.GetInstance().round_replay.win) ? "You win!" : "You lose!";
+                graphics.DrawString(results, font, brush, Width / 2, Height / 2);
             }
         }
 
         private void ReDrawCards(bool DealerVisible)
         {
-            //Clear card array, draw, add to array
             graphics = this.CreateGraphics();
             brush = new SolidBrush(Color.Black);
-            //CardList.Clear();
             graphics.Clear(Color.ForestGreen);
             for (int i = 0; i < logic.DealerHand.Cards.Count; i++)
             {
@@ -110,27 +110,12 @@ namespace BlackjackNN
                 graphics.FillRectangle(brush, card);
                 brush.Color = logic.Player.Hand.Cards[i].CardColor;
                 graphics.DrawString(logic.Player.Hand.Cards[i].ToString(), font, brush, card);
-                
             }
-            
         }
 
         private void RunButton_Click(object sender, EventArgs e)
         {
-            
-            try
-            {
-                int popsize = Int32.Parse(PopSizeBox.Text);
-                int gensize = Int32.Parse(GenBox.Text);
-                logic.NewGA(popsize, gensize);
-                HitButton.Enabled = false;
-                StayButton.Enabled = false;
-
-            } catch (Exception ex)
-            {
-                MessageBox.Show("Enter an integer");
-                Console.WriteLine(ex);
-            }
+            logic.NewGA();
         }
         
     }

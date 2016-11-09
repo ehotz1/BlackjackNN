@@ -17,11 +17,13 @@ namespace BlackjackNN
         public BJPlayer Player { get; private set; }
 
         public GeneticAlgorithm GA;
+        public RoundReplay round_replay;
 
         private BlackjackLogic()
         {
             Player = new BJPlayer();
             DealerHand = new BJHand();
+            round_replay = new RoundReplay();
             NewGame();
         }
         public string CardCounts()
@@ -63,9 +65,9 @@ namespace BlackjackNN
             }
         }
 
-        public void NewGA(int pop, int gen) 
+        public void NewGA() 
         {
-            GA = new GeneticAlgorithm(pop, gen); //Change, when saving is enabled
+            GA = new GeneticAlgorithm();
             
         }
 
@@ -94,31 +96,34 @@ namespace BlackjackNN
             DiscardHands();
             DealerHand.SetHand(DealHand());
             Player.DealHand(DealHand());
+            round_replay.ClearActions();
             CanAct = true;
         }
 
         public void BlackJackCheck() //Immediate Blackjacks are thrown out of NN fitness pool
         {
-            if (Player.Hand.HasBlackJack()) EndRound(2);
-            if (DealerHand.HasBlackJack()) EndRound(2);
+            if (Player.Hand.HasBlackJack()) EndRound(false);
+            if (DealerHand.HasBlackJack()) EndRound(false);
         }
 
         public void Hit()
         {
             if (!CanAct) return;
+            round_replay.PushAction(1, Player.Hand.GetHighValue(), DealerHand.Cards[1].NumValue);
             Player.Hand.AddCard(Deck.DrawCard());
-            if (Player.Hand.HasBlackJack()) EndRound(0);
-            else if (Player.Hand.HasBusted()) EndRound(1);
+            if (Player.Hand.HasBlackJack()) EndRound(true);
+            else if (Player.Hand.HasBusted()) EndRound(false);
         }
 
         public void Stay()
         {
+            round_replay.PushAction(0, Player.Hand.GetHighValue(), DealerHand.Cards[1].NumValue);
             while (DealerShouldHit()) { DealerHand.AddCard(Deck.DrawCard()); }
 
-            if (DealerHand.HasBlackJack() && !Player.Hand.HasBlackJack()) EndRound(1);
-            else if (DealerHand.GetHighValue() > 21) EndRound(0);
-            else if (Player.Hand.GetHighValue() >= DealerHand.GetHighValue()) EndRound(0);
-            else EndRound(1);
+            if (DealerHand.HasBlackJack() && !Player.Hand.HasBlackJack()) EndRound(false);
+            else if (DealerHand.GetHighValue() > 21) EndRound(true);
+            else if (Player.Hand.GetHighValue() >= DealerHand.GetHighValue()) EndRound(true);
+            else EndRound(false);
         }
 
         public bool DealerShouldHit() //Dealer stays on all 17's
@@ -127,27 +132,60 @@ namespace BlackjackNN
             return false;
         }
 
-        public void EndRound(int condition)
+        public void EndRound(bool win)
         {
             CanAct = false;
-            DiscardHands();
-            switch (condition) {
-                case 0:
-                    GA.SetNetworkFitness(true);
-                    break;
-                case 1:
-                    GA.SetNetworkFitness(false);
-                    break;
-                case 2:
-                    GA.SetNetworkFitness(false);
-                    break;
-
-            }
+            round_replay.PushAction(2, Player.Hand.GetHighValue(), DealerHand.GetHighValue());
+            round_replay.SetWin(win);
         }
 
         
 
     }
     
-    
+    public class RoundReplay
+    {
+        private List<int[]> actions;
+        public bool win { get; private set; }
+        public RoundReplay()
+        {
+            actions = new List<int[]>();
+            win = false;
+        }
+
+        public void PushAction(int action, int player, int dealer)
+        {
+            actions.Add(new int[] { action, player, dealer });
+        }
+
+        public void SetWin(bool w)
+        {
+            win = w;
+        }
+
+        public void ClearActions()
+        {
+            actions.Clear();
+            win = false;
+        }
+
+        public string PrintReplay()
+        {
+            if (actions.Count == 0) return "No replay available";
+            string s = "";
+            for (int i = 0; i < actions.Count - 1; i++)
+            {
+                s += "Player: " + actions[i][1] + "; Dealer: " + actions[i][2];
+                s += (actions[i][0] == 1) ? "; Hit \n" : "; Stay \n";
+            }
+            s+= "Final Results: Player: " + actions[actions.Count-1][1] + "; Dealer: " + actions[actions.Count - 1][2];
+            s += (win) ? "; Player wins." : "; Dealer wins.";
+            return s;
+        }
+
+        public int[] GetRoundResults()
+        {
+            return new int[] { Convert.ToInt32(win), actions[actions.Count - 1][1], actions[actions.Count - 1][2] };
+        }
+    }
 }

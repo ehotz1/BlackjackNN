@@ -13,32 +13,36 @@ namespace BlackjackNN
     public partial class NetInterface : Form
     {
         GeneticAlgorithm GA;
-        int generation;
 
         public NetInterface(GeneticAlgorithm ga)
         {
             GA = ga;
-            generation = 0;
             InitializeComponent();
         }
 
         public void UpdateDisplay(string text)
         {
-            InterfaceTextBox.Text = generation + ": " + text + "\n" + InterfaceTextBox.Text;
-            
+            InterfaceTextBox.Text = text + "\n" + InterfaceTextBox.Text;
         }
 
-        private void StopButton_Click(object sender, EventArgs e)
+        public void Reset()
+        {
+            RunButton.Enabled = false;
+            ParamsButton.Enabled = true;
+        }
+
+        private void RunButton_Click(object sender, EventArgs e)
         {
             if (GA.Stop)
             {
-                StopButton.Text = "Pause";
+                RunButton.Text = "Pause";
                 GA.Stop = false;
                 try
                 {
+                    ParamsButton.Enabled = false;
                     GA.Run();
                     GA.Stop = true;
-                    StopButton.Text = "Run";
+                    RunButton.Text = "Run";
                 } catch (Exception ex)
                 {
                     Console.WriteLine(ex);
@@ -47,9 +51,48 @@ namespace BlackjackNN
             }
             else
             {
-                StopButton.Text = "Run";
+                RunButton.Text = "Run";
                 GA.Stop = true;
             }
         }
+
+        private void ParamsButton_Click(object sender, EventArgs e)
+        {
+            InterfaceTextBox.Text = "";
+            try
+            {
+                GA.SetParams(Int32.Parse(PopSizeBox.Text), Int32.Parse(GenBox.Text),(int)RoundNumControl.Value,(int)WinPercentageControl.Value);
+                RunButton.Enabled = true;
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Please enter valid integers in the population/generation fields");
+            }
+        }
+
+        private void TestTopNetworkButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GA.TestTopNetwork();
+            } catch (Exception ex)
+            {
+                InterfaceTextBox.Text = "No networks available \n" + InterfaceTextBox.Text;
+            }
+        }
+
+        private void WeightsButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                NetWeights NW = new NetWeights(GA.GetTopNetworkWeights());
+                NW.Show();
+            }
+            catch (Exception ex)
+            {
+                InterfaceTextBox.Text = "No networks available \n" + InterfaceTextBox.Text;
+                Console.WriteLine(ex);
+            }
+        }
+        
     }
 }

@@ -66,6 +66,12 @@
     <Compile Include="NetInterface.Designer.cs">
       <DependentUpon>NetInterface.cs</DependentUpon>
     </Compile>
+    <Compile Include="NetWeights.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NetWeights.Designer.cs">
+      <DependentUpon>NetWeights.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
@@ -73,6 +79,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NetInterface.resx">
       <DependentUpon>NetInterface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NetWeights.resx">
+      <DependentUpon>NetWeights.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -83,7 +83,7 @@ namespace BlackjackNN
 
         public override void CreateNeurons()
         {
-            AddNeuron(new HiddenNeuron(3)); //Process player cards
+            AddNeuron(new HiddenNeuron(1)); //Process player cards
             AddNeuron(new HiddenNeuron(1)); //Process dealer
         }
 
