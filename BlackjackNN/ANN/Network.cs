@@ -25,14 +25,14 @@ namespace BlackjackNN
 
         private void CreateLayers()
         {
-            layers[0] = new InputLayer(2); //Input number of neurons for each layer
+            layers[0] = new InputLayer(2); //Param as number of neurons for each layer
             layers[1] = new HiddenLayer(2);
             layers[2] = new OutputLayer(1);
         }
 
         public void SetResults(int round, int win, int player, int dealer)
         {
-            if (dealer > 21) dealer = 22; //Treats all dealer busts as the same fitness
+            if (dealer > 21) dealer = 22; //Treats all dealer losses as the same value
             results.SetRoundResult(round, win, player, dealer);
         }
 
@@ -67,8 +67,6 @@ namespace BlackjackNN
             layers[2].SetInputs(layers[1].ProcessLayer());
 
             return ((int)layers[2].ProcessLayer()[0] == 1) ? true : false;
-            
-
         }
         
     }
@@ -102,16 +100,12 @@ namespace BlackjackNN
         public double GetFitness() //Network fitness function
         {
             double fitness = 0;
-            int wins = 0;
             for (int i = 0; i < results.GetLength(0); i++)
             {
-                if (results[i, 0] == 1)
-                {
-                    fitness += (double)results[i, 1] / (double)results[i, 2];
-                    wins++;
-                }
+                if (results[i, 1] > 21) continue;
+                else fitness += (double)results[i, 1] / 21;
             }
-            return (wins == 0) ? 0 : fitness / (double)wins;
+            return fitness / results.GetLength(0);
         }
 
         public string PrintResults()

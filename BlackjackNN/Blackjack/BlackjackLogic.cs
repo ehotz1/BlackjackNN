@@ -100,9 +100,9 @@ namespace BlackjackNN
             CanAct = true;
         }
 
-        public void BlackJackCheck() //Immediate Blackjacks are thrown out of NN fitness pool
+        public void BlackJackCheck()
         {
-            if (Player.Hand.HasBlackJack()) EndRound(false);
+            if (Player.Hand.HasBlackJack()) EndRound(true);
             if (DealerHand.HasBlackJack()) EndRound(false);
         }
 

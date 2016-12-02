@@ -63,7 +63,7 @@ namespace BlackjackNN
 
         public override void CreateNeurons()
         {
-            AddNeuron(new InputNeuron(3)); //Input player cards
+            AddNeuron(new InputNeuron(1)); //Input player cards
             AddNeuron(new InputNeuron(1)); //Input dealer card
         }
 
@@ -107,10 +107,6 @@ namespace BlackjackNN
 
         public override void SetInputs(double[] arr)
         {
-            //for (int i = 0; i < neurons.Length; i++)
-            //{
-            //    neurons[i].SetInputs(arr);
-            //}
             neurons[0].SetInputs(arr);
         }
     }

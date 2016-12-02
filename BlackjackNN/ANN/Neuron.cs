@@ -32,28 +32,25 @@ namespace BlackjackNN
         public InputNeuron(int WtArrSize) : base(WtArrSize)
         {
         }
-
-        //inputs[0]: hand value
-        //inputs[1]: second hand value; only used if player's hand contains an ace
-        //weights[0]: weight for hand value
-        //weights[1/2]: used to weight ace low/ace high hands
+        
 
         public new void SetInputs(double[] i)
         {
             inputs = i;
+            NormalizeData();
         }
 
         public override double ProcessingFunction() //Weight inputs, sum
         {
-            //If a second hand value exists - an Ace in hand - choose which value to use
-            int i = 0;
-            if (inputs.Length > 1 && inputs[1] != -1)
+            return inputs[0] * weights[0];
+        }
+
+        private void NormalizeData()
+        {
+            for (int i = 0; i < inputs.Length; i++) 
             {
-                i = (inputs[0] * weights[1] > inputs[1] * weights[2]) ? 0 : 1;
+                inputs[i] = inputs[i]/20;
             }
-            
-            return inputs[i] * weights[0];
-            
         }
     }
 
@@ -65,10 +62,8 @@ namespace BlackjackNN
 
         public override double ProcessingFunction()
         {
-            //Activation function - Sigmoid, modified to process outputs for values from 2 to 20
-
-            Output = 1 / (1 + Math.Exp(-5+.5 * inputs[0]));
-            //Output = inputs[0] / 20;
+            //Transfer function - Modified Sigmoid
+            Output = 1 / (1 + Math.Exp(-3+(6*inputs[0])));
             return Output * weights[0];
         }
 
@@ -84,8 +79,8 @@ namespace BlackjackNN
         public override double ProcessingFunction()
         {
             double threshold = weights[0];
-            //Activation function. Decide whether to hit or stay; output 1 or 0
-            Output = (inputs[0] + inputs[1] > threshold) ? 1 : 0;
+            //Activation function. Decide whether to hit or stay
+            Output = (inputs[0] > threshold && inputs[1] < threshold) ? 1 : 0;
             return Output;
         }
 
